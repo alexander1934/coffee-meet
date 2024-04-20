@@ -6,6 +6,9 @@ import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { ref, onMounted } from "vue";
 import { updateProfileApi } from "../../api/profile";
+import axiosClient from '../../axios';
+import { useRoute } from 'vue-router';
+
 
 const store = useStore();
 const router = useRouter();
@@ -13,21 +16,6 @@ const router = useRouter();
 const user = computed(() => store.state.user.data);
 
 const image = ref("");
-
-// const user = {
-// 	"id": 1,
-// 	"name": "Alexander",
-// 	"surname": "Kovalenko",
-// 	"patronymic": "Sergeevich",
-// 	"email": "alexankovalenko23@gmail.com",
-// 	"position": "Temlead Vue dev",
-// 	"department": "Frontend",
-// 	"about": "Люблю играть на сларке в доту",
-// 	"phone": "+79897129550",
-// 	"telegram": "@alexanderrrkovalenko",
-// 	"is_confirmed": true,
-// 	"is_ready": "true"
-// }
 
 store.dispatch("getUser");
 
@@ -48,17 +36,18 @@ const telegram = ref(user.telegram);
 const phoneNumber = ref(user.phone);
 const about = ref(user.about);
 
-const updateProfile = async () => {
-	const profile = {
-		date,
-		position,
-		department,
-		telegram,
-		phoneNumber,
-		about,
-	};
-	await updateProfileApi(profile);
+const route = useRoute();
+const profile = ref('');
+
+const getBook = async () => {
+  const response = await axiosClient.get('/get-profile-info');
+  profile.value = response.data;
 };
+getBook();
+
+console.log(profile);
+
+
 </script>
 
 <template>
