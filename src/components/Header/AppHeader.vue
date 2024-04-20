@@ -1,15 +1,35 @@
-<script setup></script>
+<script setup>
+const links = [
+	{
+		name: "Актуальная встреча",
+		link: "/current-meet",
+	},
+	{
+		name: "История встреч",
+		link: "/history",
+	},
+	{
+		name: "Профиль",
+		link: "/profile",
+	},
+];
+</script>
 
 <template>
 	<header class="header">
 		<div class="header__layout">
 			<div class="header__block">
-				<img class="w-28" src="../../assets/appIconBlack.png" alt="" />
-				<h1 class="header__title">Vue Gallery</h1>
+				<img class="w-28" src="../../assets/appIcon.png" alt="" />
 			</div>
-			<div class="header__block">
-				<span>Alexander Kovalenko</span>
-			</div>
+			<nav class="flex gap-20">
+				<RouterLink
+					v-for="link in links"
+					exactActiveClass="!text-primary-dark-yellow"
+					class="text-black"
+					:to="link.link"
+					>{{ link.name }}</RouterLink
+				>
+			</nav>
 		</div>
 	</header>
 </template>

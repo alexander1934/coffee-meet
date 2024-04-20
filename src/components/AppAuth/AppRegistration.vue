@@ -76,11 +76,11 @@ const setUser = () => {
 
 <style scoped>
 .form__layout {
-	@apply flex h-[calc(100vh-120px)] items-center justify-center overflow-scroll p-4;
+	@apply flex h-[calc(100vh-120px)] items-center justify-center p-4;
 }
 
 .form__container {
-	@apply overflow-scroll rounded-xl bg-gray-100 px-6 py-8 sm:px-12;
+	@apply rounded-xl bg-gray-100 px-6 py-8 sm:px-12;
 }
 
 .form__title {
@@ -96,6 +96,6 @@ const setUser = () => {
 }
 
 .form__button {
-	@apply rounded-full px-[1.6em] py-[0.6em] bg-primary-dark-yellow hover:bg-primary-yellow;
+	@apply rounded-full bg-primary-dark-yellow px-[1.6em] py-[0.6em] hover:bg-primary-yellow;
 }
 </style>
