@@ -6,6 +6,9 @@ import { useRouter } from "vue-router";
 import { computed } from 'vue';
 import { ref, onMounted } from "vue";
 import { updateProfileApi } from "../../api/profile";
+import axiosClient from '../../axios';
+import { useRoute } from 'vue-router';
+
 
 const date = ref("");
 
@@ -25,6 +28,17 @@ function logout() {
   });
 }
 
+
+const route = useRoute();
+const profile = ref('');
+
+const getBook = async () => {
+  const response = await axiosClient.get('/get-profile-info');
+  profile.value = response.data;
+};
+getBook();
+
+console.log(profile);
 
 
 </script>
