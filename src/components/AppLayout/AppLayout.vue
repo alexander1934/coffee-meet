@@ -1,5 +1,5 @@
 <script setup>
-import Calendar from 'primevue/calendar';
+import Calendar from "primevue/calendar";
 import { ref } from "vue";
 
 const date = ref("");
@@ -17,7 +17,10 @@ const date = ref("");
 				<div
 					class="flex w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
 					<img src="../../assets/dragAndDrop.svg" alt="dragAndDrop" />
-					<span class="text-gray-500">Загрузите изображение</span>
+					<button
+						class="text-gray-500 active:outline-none">
+						Загрузите изображение
+					</button>
 				</div>
 				<div class="flex flex-col gap-4">
 					<Calendar
@@ -44,7 +47,7 @@ const date = ref("");
 						placeholder="Номер телефона"
 						type="text" />
 					<textarea
-						class="form__input min-h-[92px] max-h-[92px]"
+						class="form__input max-h-[92px] min-h-[92px]"
 						placeholder="Расскажите о себе" />
 				</div>
 			</div>
@@ -68,6 +71,6 @@ const date = ref("");
 }
 
 .form__button {
-	@apply rounded-full px-[1.6em] py-[0.6em] bg-primary-dark-yellow hover:bg-primary-yellow;
+	@apply rounded-full bg-primary-dark-yellow px-[1.6em] py-[0.6em] hover:bg-primary-yellow;
 }
 </style>
