@@ -25,24 +25,7 @@ function logout() {
   });
 }
 
-const date = ref("");
-const position = ref("");
-const department = ref("");
-const telegram = ref("");
-const phoneNumber = ref("");
-const about = ref("");
 
-const updateProfile = async () => {
-	const profile = {
-		date,
-		position,
-		department,
-		telegram,
-		phoneNumber,
-		about,
-	};
-	await updateProfileApi(profile);
-};
 
 </script>
 

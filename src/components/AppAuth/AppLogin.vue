@@ -1,40 +1,46 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import store from "../../store";
 
-// Получаем объект маршрутизатора
+// Получаем объект маршрутизатора	
 const router = useRouter();
 
 // Создаем реактивные переменные для хранения данных о пользователе
-const email = ref("");
-const password = ref("");
-
-// Функция для сохранения данных пользователя в локальное хранилище и перехода на главную страницу
-const setUser = () => {
-	const User = {
-		email: email.value,
-		password: password.value,
-	};
-	router.push("/app"); // Переходим на главную страницу
+const user = {
+  email: "",
+  password: "",
 };
+
+function login(ev) {
+  ev.preventDefault();
+
+  store
+    .dispatch("login", user)
+    .then(() => {
+      router.push({
+        name: "Profile",
+      });
+    })
+}
 </script>
 
 <template>
 	<div class="form__layout">
 		<div class="form__container">
 			<h1 class="form__title">Войти</h1>
-			<form action="" class="form">
+			<form action="" class="form" @submit="login">
 				<input
-					v-model="email"
+					v-model="user.email"
 					class="form__input"
 					placeholder="Почта"
 					type="text" />
 				<input
-					v-model="password"
+					v-model="user.password"
 					class="form__input"
 					placeholder="Пароль"
 					type="text" />
-				<button class="form__button" @click="setUser">
+				<button class="form__button">
 					Продолжить
 				</button>
 				<span class="text-center">
