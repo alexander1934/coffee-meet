@@ -1,27 +1,26 @@
 <script setup>
-import Calendar from 'primevue/calendar';
+import Calendar from "primevue/calendar";
 import { ref, onMounted } from "vue";
-import { updateProfile } from '../../api/profile';
+import { updateProfile } from "../../api/profile";
 
 const date = ref("");
 const position = ref("");
 const department = ref("");
 const telegram = ref("");
 const phoneNumber = ref("");
-const about = ref("")
+const about = ref("");
 
-const updateProfile = () => {
+const updateProfile = async () => {
 	const profile = {
 		date,
 		position,
 		department,
 		telegram,
 		phoneNumber,
-		about
+		about,
 	};
 	await updateProfile(profile);
 };
-
 </script>
 
 <template>
@@ -36,8 +35,7 @@ const updateProfile = () => {
 				<div
 					class="flex w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
 					<img src="../../assets/dragAndDrop.svg" alt="dragAndDrop" />
-					<button
-						class="text-gray-500 active:outline-none">
+					<button class="text-gray-500 active:outline-none">
 						Загрузите изображение
 					</button>
 				</div>
@@ -51,33 +49,33 @@ const updateProfile = () => {
 						placeholder="Дата рождения" />
 					<input
 						placeholder="Должность"
-						type="text" 
+						type="text"
 						class="form__input"
-						v-model="position"
-					/>
+						v-model="position" />
 					<input
 						placeholder="Отдел"
-						type="text" 
+						type="text"
 						class="form__input"
-						v-model="department"
-					/>
+						v-model="department" />
 					<input
 						placeholder="Telegram"
-						type="text" 
+						type="text"
 						class="form__input"
 						v-model="telegram" />
 					<input
 						placeholder="Номер телефона"
-						type="text" 
+						type="text"
 						class="form__input"
 						v-model="phoneNumber" />
 					<textarea
-						class="form__input min-h-[92px] max-h-[92px]"
-						placeholder="Расскажите о себе" 
+						class="form__input max-h-[92px] min-h-[92px]"
+						placeholder="Расскажите о себе"
 						v-model="about" />
 				</div>
 			</div>
-			<button class="form__button" @click="updateProfile">Сохранить</button>
+			<button class="form__button" @click="updateProfile">
+				Сохранить
+			</button>
 		</div>
 	</div>
 </template>
