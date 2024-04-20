@@ -1,13 +1,32 @@
 <script setup>
 import Calendar from 'primevue/calendar';
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { updateProfile } from '../../api/profile';
 
 const date = ref("");
+const position = ref("");
+const department = ref("");
+const telegram = ref("");
+const phoneNumber = ref("");
+const about = ref("")
+
+const updateProfile = () => {
+	const profile = {
+		date,
+		position,
+		department,
+		telegram,
+		phoneNumber,
+		about
+	};
+	await updateProfile(profile);
+};
+
 </script>
 
 <template>
 	<div class="flex flex-col items-center justify-center">
-		<h1 class="mb-10 font-bold">Личный кабинет</h1>
+		<h1 class="mb-10 font-bold">Профиль</h1>
 		<h2 class="mb-7 text-3xl font-bold">
 			<span class="text-primary-dark-yellow">Коваленко</span> Александр
 			Сергеевич
@@ -28,27 +47,34 @@ const date = ref("");
 						v-model="date"
 						placeholder="Дата рождения" />
 					<input
-						class="form__input"
 						placeholder="Должность"
-						type="text" />
-					<input
+						type="text" 
 						class="form__input"
+						v-model="position"
+					/>
+					<input
 						placeholder="Отдел"
-						type="text" />
-					<input
+						type="text" 
 						class="form__input"
+						v-model="department"
+					/>
+					<input
 						placeholder="Telegram"
-						type="text" />
-					<input
+						type="text" 
 						class="form__input"
+						v-model="telegram" />
+					<input
 						placeholder="Номер телефона"
-						type="text" />
+						type="text" 
+						class="form__input"
+						v-model="phoneNumber" />
 					<textarea
 						class="form__input min-h-[92px] max-h-[92px]"
-						placeholder="Расскажите о себе" />
+						placeholder="Расскажите о себе" 
+						v-model="about" />
 				</div>
 			</div>
-			<button class="form__button">Сохранить</button>
+			<button class="form__button" @click="updateProfile">Сохранить</button>
 		</div>
 	</div>
 </template>
