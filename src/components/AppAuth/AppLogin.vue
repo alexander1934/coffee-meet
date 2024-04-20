@@ -70,6 +70,6 @@ const setUser = () => {
 }
 
 .form__button {
-	@apply rounded-full px-[1.6em] py-[0.6em] bg-primary-dark-yellow hover:bg-primary-yellow;
+	@apply rounded-full bg-primary-dark-yellow px-[1.6em] py-[0.6em] hover:bg-primary-yellow;
 }
 </style>

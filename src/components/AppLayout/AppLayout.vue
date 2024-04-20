@@ -1,9 +1,11 @@
 <script setup>
+
 import Calendar from 'primevue/calendar';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { computed } from 'vue';
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { updateProfileApi } from "../../api/profile";
 
 const date = ref("");
 
@@ -22,11 +24,31 @@ function logout() {
     store.dispatch("getUser");
   });
 }
+
+const date = ref("");
+const position = ref("");
+const department = ref("");
+const telegram = ref("");
+const phoneNumber = ref("");
+const about = ref("");
+
+const updateProfile = async () => {
+	const profile = {
+		date,
+		position,
+		department,
+		telegram,
+		phoneNumber,
+		about,
+	};
+	await updateProfileApi(profile);
+};
+
 </script>
 
 <template>
 	<div class="flex flex-col items-center justify-center">
-		<h1 class="mb-10 font-bold">Личный кабинет</h1>
+		<h1 class="mb-10 font-bold">Профиль</h1>
 		<h2 class="mb-7 text-3xl font-bold">
 			<span class="text-primary-dark-yellow">Коваленко</span> Александр
 			Сергеевич
@@ -36,7 +58,9 @@ function logout() {
 				<div
 					class="flex w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
 					<img src="../../assets/dragAndDrop.svg" alt="dragAndDrop" />
-					<span class="text-gray-500">Загрузите изображение</span>
+					<button class="text-gray-500 active:outline-none">
+						Загрузите изображение
+					</button>
 				</div>
 				<div class="flex flex-col gap-4">
 					<Calendar
@@ -47,27 +71,34 @@ function logout() {
 						v-model="date"
 						placeholder="Дата рождения" />
 					<input
-						class="form__input"
 						placeholder="Должность"
-						type="text" />
-					<input
+						type="text"
 						class="form__input"
+						v-model="position" />
+					<input
 						placeholder="Отдел"
-						type="text" />
-					<input
+						type="text"
 						class="form__input"
+						v-model="department" />
+					<input
 						placeholder="Telegram"
-						type="text" />
-					<input
+						type="text"
 						class="form__input"
+						v-model="telegram" />
+					<input
 						placeholder="Номер телефона"
-						type="text" />
+						type="text"
+						class="form__input"
+						v-model="phoneNumber" />
 					<textarea
-						class="form__input min-h-[92px] max-h-[92px]"
-						placeholder="Расскажите о себе" />
+						class="form__input max-h-[92px] min-h-[92px]"
+						placeholder="Расскажите о себе"
+						v-model="about" />
 				</div>
 			</div>
-			<button class="form__button">Сохранить</button>
+			<button class="form__button" @click="updateProfile">
+				Сохранить
+			</button>
 		</div>
 	</div>
 </template>
@@ -87,6 +118,6 @@ function logout() {
 }
 
 .form__button {
-	@apply rounded-full px-[1.6em] py-[0.6em] bg-primary-dark-yellow hover:bg-primary-yellow;
+	@apply rounded-full bg-primary-dark-yellow px-[1.6em] py-[0.6em] hover:bg-primary-yellow;
 }
 </style>
