@@ -1,8 +1,27 @@
 <script setup>
 import Calendar from 'primevue/calendar';
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { computed } from 'vue';
 import { ref } from "vue";
 
 const date = ref("");
+
+const store = useStore();
+const router = useRouter();
+
+const user = computed(() => store.state.user.data);
+
+store.dispatch("getUser");
+
+function logout() {
+  store.dispatch("logout").then(() => {
+    router.push({
+      name: "Login",
+    });
+    store.dispatch("getUser");
+  });
+}
 </script>
 
 <template>
