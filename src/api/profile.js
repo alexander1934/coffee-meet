@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import apiClient from "@/api/apiClient";
+import apiClient from "./apiClient.js";
 
-export async function getProfile() {}
+export async function getProfileApi() {}
 
-export async function updateProfile(profile) {}
+export async function updateProfileApi(profile) {}

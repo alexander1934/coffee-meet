@@ -1,7 +1,7 @@
 <script setup>
 import Calendar from "primevue/calendar";
 import { ref, onMounted } from "vue";
-import { updateProfile } from "../../api/profile";
+import { updateProfileApi } from "../../api/profile";
 
 const date = ref("");
 const position = ref("");
@@ -19,7 +19,7 @@ const updateProfile = async () => {
 		phoneNumber,
 		about,
 	};
-	await updateProfile(profile);
+	await updateProfileApi(profile);
 };
 </script>
 
