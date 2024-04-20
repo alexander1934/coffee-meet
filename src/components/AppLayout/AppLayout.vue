@@ -1,7 +1,29 @@
 <script setup>
-import Calendar from "primevue/calendar";
+
+import Calendar from 'primevue/calendar';
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { computed } from 'vue';
 import { ref, onMounted } from "vue";
 import { updateProfileApi } from "../../api/profile";
+
+const date = ref("");
+
+const store = useStore();
+const router = useRouter();
+
+const user = computed(() => store.state.user.data);
+
+store.dispatch("getUser");
+
+function logout() {
+  store.dispatch("logout").then(() => {
+    router.push({
+      name: "Login",
+    });
+    store.dispatch("getUser");
+  });
+}
 
 const date = ref("");
 const position = ref("");
@@ -21,6 +43,7 @@ const updateProfile = async () => {
 	};
 	await updateProfileApi(profile);
 };
+
 </script>
 
 <template>
