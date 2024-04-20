@@ -8,25 +8,22 @@ const router = useRouter();
 
 // Создаем реактивные переменные для хранения данных о пользователе
 
-const user = {	
-  surname: "",
-  name: "",
-  patronymic: "",
-  email: "",
-  password: "",
-  password_confirmation: "",
+const user = {
+	surname: "",
+	name: "",
+	patronymic: "",
+	email: "",
+	password: "",
+	password_confirmation: "",
 };
 
 function register(ev) {
-  ev.preventDefault();
-  store
-    .dispatch("register", user)
-    .then(() => {
-      router.push({
-        name: "App",
-      });
-    })
-    
+	ev.preventDefault();
+	store.dispatch("register", user).then(() => {
+		router.push({
+			name: "App",
+		});
+	});
 }
 </script>
 
@@ -70,7 +67,10 @@ function register(ev) {
 				</button>
 				<span class="text-center">
 					Уже зарегистрированы?
-					<RouterLink @click="register" to="/login" class="cursor-pointer"
+					<RouterLink
+						@click="register"
+						to="/login"
+						class="cursor-pointer"
 						>Войти</RouterLink
 					>
 				</span>

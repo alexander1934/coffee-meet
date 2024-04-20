@@ -140,9 +140,7 @@ const timeframes = ref([
 						placeholder="Длительность" />
 				</div>
 			</div>
-			<button class="form__button">
-				Подтвердить
-			</button>
+			<button class="form__button">Подтвердить</button>
 		</div>
 	</div>
 </template>

@@ -1,36 +1,52 @@
 <script setup>
-
-import Calendar from 'primevue/calendar';
+import Calendar from "primevue/calendar";
+import FileUpload from "primevue/fileupload";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { computed } from 'vue';
+import { computed } from "vue";
 import { ref, onMounted } from "vue";
 import { updateProfileApi } from "../../api/profile";
-
-const date = ref("");
 
 const store = useStore();
 const router = useRouter();
 
 const user = computed(() => store.state.user.data);
 
+const image = ref("");
+
+// const user = {
+// 	"id": 1,
+// 	"name": "Alexander",
+// 	"surname": "Kovalenko",
+// 	"patronymic": "Sergeevich",
+// 	"email": "alexankovalenko23@gmail.com",
+// 	"position": "Temlead Vue dev",
+// 	"department": "Frontend",
+// 	"about": "Люблю играть на сларке в доту",
+// 	"phone": "+79897129550",
+// 	"telegram": "@alexanderrrkovalenko",
+// 	"is_confirmed": true,
+// 	"is_ready": "true"
+// }
+
 store.dispatch("getUser");
 
 function logout() {
-  store.dispatch("logout").then(() => {
-    router.push({
-      name: "Login",
-    });
-    store.dispatch("getUser");
-  });
+	store.dispatch("logout").then(() => {
+		router.push({
+			name: "Login",
+		});
+		store.dispatch("getUser");
+	});
 }
 
-const date = ref("");
-const position = ref("");
-const department = ref("");
-const telegram = ref("");
-const phoneNumber = ref("");
-const about = ref("");
+const date = ref(new Date("2024-04-10T00:00:00.000"));
+console.log(date.value);
+const position = ref(user.position);
+const department = ref(user.department);
+const telegram = ref(user.telegram);
+const phoneNumber = ref(user.phone);
+const about = ref(user.about);
 
 const updateProfile = async () => {
 	const profile = {
@@ -43,24 +59,40 @@ const updateProfile = async () => {
 	};
 	await updateProfileApi(profile);
 };
-
 </script>
 
 <template>
-	<div class="flex flex-col items-center justify-center">
+	<div
+		v-if="user.id !== undefined"
+		class="flex flex-col items-center justify-center">
 		<h1 class="mb-10 font-bold">Профиль</h1>
-		<h2 class="mb-7 text-3xl font-bold">
-			<span class="text-primary-dark-yellow">Коваленко</span> Александр
-			Сергеевич
+		<h2 v-if="user.is_confirmed" class="mb-7 text-3xl font-bold">
+			<span class="text-primary-dark-yellow">{{ user.surname }}</span>
+			{{ user.name }}
+			{{ user.patronymic }}
 		</h2>
-		<div class="flex flex-col items-center justify-center gap-6">
+		<div
+			v-if="user.is_confirmed"
+			class="flex flex-col items-center justify-center gap-6">
 			<div class="flex gap-5">
-				<div
-					class="flex w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
-					<img src="../../assets/dragAndDrop.svg" alt="dragAndDrop" />
-					<button class="text-gray-500 active:outline-none">
-						Загрузите изображение
-					</button>
+				<div class="flex flex-col justify-between gap-4">
+					<div
+						:style="{ 'background-image': `url(${image.value})` }"
+						class="flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
+						<img
+							src="../../assets/dragAndDrop.svg"
+							alt="dragAndDrop" />
+						<FileUpload
+							class="bg-transparent text-gray-400"
+							mode="basic"
+							name="avatar"
+							url="http://norm-perdachello.ru:8000/api/upload"
+							accept="image/*"
+							:maxFileSize="1000000"
+							@upload="onUpload"
+							:auto="true"
+							chooseLabel="Загрузить" />
+					</div>
 				</div>
 				<div class="flex flex-col gap-4">
 					<Calendar
@@ -100,6 +132,15 @@ const updateProfile = async () => {
 				Сохранить
 			</button>
 		</div>
+		<h2 v-else class="flex items-center gap-5 text-3xl font-semibold">
+			Ожидайте подтверждение от администратора
+			<img src="../../assets/emoji.svg" class="w-7" alt="emoji" />
+		</h2>
+	</div>
+	<div
+		class="flex flex-col items-center justify-center font-bold"
+		v-else>
+		<h1>Загрузка...</h1>
 	</div>
 </template>
 

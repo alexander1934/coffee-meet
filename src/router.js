@@ -7,10 +7,10 @@ import AppLayout from "./components/AppLayout/AppLayout.vue";
 import AppCurrentMeet from "./components/AppCurrentMeet/AppCurrentMeet.vue";
 
 const routes = [
-	{ path: "/registration", component: AppRegistration, name: 'Register' },
+	{ path: "/registration", component: AppRegistration, name: "Register" },
 	{ path: "/login", component: AppLogin, name: "Login" },
-	{ path: "/app", component: AppLayout, name: 'App', },
-	{ path: "/profile", component: AppLayout, name: 'Profile' },
+	{ path: "/app", component: AppLayout, name: "App" },
+	{ path: "/profile", component: AppLayout, name: "Profile" },
 	{ path: "/history", component: AppLayout },
 	{ path: "/current-meet", component: AppCurrentMeet },
 ];
@@ -22,13 +22,15 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
 	if (to.meta.requiresAuth && !store.state.user.token) {
-		next({ name: 'Login' })
-	} else if (store.state.user.token && (to.name === 'Login' || to.name === 'Register')) {
-		next({ name: 'Profile' });
+		next({ name: "Login" });
+	} else if (
+		store.state.user.token &&
+		(to.name === "Login" || to.name === "Register")
+	) {
+		next({ name: "Profile" });
 	} else {
-		next()
+		next();
 	}
-})
-
+});
 
 export default router;
