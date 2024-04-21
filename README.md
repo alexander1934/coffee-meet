@@ -1,7 +1,26 @@
-# Vue 3 + Vite
+# Random coffee
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Сервис для нетворкинга и общения сотрудников вне рабочих задач.
+Сервис рандомно делит коллег на пары и предлагает онлайн или офлайн (если сотрудник удаленный) встретиться и поболтать за чашечкой кофе. 
 
-## Recommended IDE Setup
+## Документация
 
--   [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+## Установка
+
+```bash
+git clone
+cd
+npm install
+```
+
+Для сборки проекта выполните команду 
+```bash
+npm run build
+```
+
+Для запуска сервера для локальной разработки выполните команду
+```bash
+npm run dev
+```
+
+
