@@ -56,12 +56,12 @@ function register(ev) {
 					v-model="user.password"
 					class="form__input"
 					placeholder="Пароль"
-					type="text" />
+					type="password" />
 				<input
 					v-model="user.password_confirmation"
 					class="form__input"
 					placeholder="Повторите пароль"
-					type="text" />
+					type="password" />
 				<button class="form__button" @click="setUser">
 					Продолжить
 				</button>

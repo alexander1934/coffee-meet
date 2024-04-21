@@ -37,7 +37,7 @@ function login(ev) {
 					v-model="user.password"
 					class="form__input"
 					placeholder="Пароль"
-					type="text" />
+					type="password" />
 				<button class="form__button">Продолжить</button>
 				<span class="text-center">
 					Еще не зарегистрированы? <br />

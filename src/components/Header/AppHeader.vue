@@ -40,13 +40,11 @@ watchEffect(() => {
 				<RouterLink
 					v-for="link in links"
 					exactActiveClass="text-primary-dark-yellow"
-					class="text-black hidden md:block"
+					class="hidden text-black md:block"
 					:to="link.link"
 					>{{ link.name }}</RouterLink
 				>
-				<div>
-
-				</div>
+				<div></div>
 			</nav>
 		</div>
 	</header>

@@ -91,7 +91,7 @@ const updateProfile = () => {
 				<div class="flex flex-col justify-between gap-4">
 					<div
 						:style="{ 'background-image': `url(${image}` }"
-						class="group flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100 hover:opacity-75">
+						class="group flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100 bg-cover hover:opacity-75">
 						<img
 							v-if="!image"
 							src="../../assets/dragAndDrop.svg"
@@ -105,7 +105,10 @@ const updateProfile = () => {
 							mode="basic"
 							@upload="onUpload"
 							name="avatar"
-							:url="'http://norm-perdachello.ru:8000/api/upload/' + user.id"
+							:url="
+								'http://norm-perdachello.ru:8000/api/upload/' +
+								user.id
+							"
 							accept="image/*"
 							:maxFileSize="1000000"
 							:auto="true"
@@ -114,7 +117,7 @@ const updateProfile = () => {
 				</div>
 				<div class="flex flex-col gap-4">
 					<Calendar
-						dateFormat="dd/mm/yy"
+						dateFormat="dd.mm.yy"
 						class="form__input !p-0"
 						showIcon
 						iconDisplay="input"

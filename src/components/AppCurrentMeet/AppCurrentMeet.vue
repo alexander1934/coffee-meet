@@ -1,8 +1,8 @@
 <script setup>
 import Calendar from "primevue/calendar";
 import Dropdown from "primevue/dropdown";
-import Dialog from 'primevue/dialog';
-import Rating from 'primevue/rating';
+import Dialog from "primevue/dialog";
+import Rating from "primevue/rating";
 
 import { ref } from "vue";
 import axiosClient from "../../axios.js";
@@ -23,7 +23,7 @@ const getUser = async () => {
 	try {
 		const response = await axiosClient.get("/meet");
 		data.value = response.data;
-
+		const date = new Date()
 		// Установка значений реактивных переменных после получения данных
 		currentUserDate.value = data.value.user.date_and_time
 			? new Date(data.value.user.date_and_time)
@@ -60,12 +60,12 @@ const getUser = async () => {
 				: "";
 		selectedTimeframe.value =
 			data.value.user.duration !== null
-				? { code: "30", name: data.value.user.duration }
+				? { code: data.value.user.duration.split(" ")[0], name: data.value.user.duration }
 				: "";
 		timeframes.value = [
-			{ name: "10 мин", code: "10" },
-			{ name: "15 мин", code: "15" },
-			{ name: "30 мин", code: "30" },
+			{ name: "10 минут", code: "10" },
+			{ name: "15 минут", code: "15" },
+			{ name: "30 минут", code: "30" },
 		];
 		colleagueSelectedTimeframe.value = data.value.colleague.duration;
 	} catch (error) {
@@ -81,7 +81,7 @@ const suggestMeetInfo = async () => {
 		date_and_time: currentUserDate.value,
 		is_online: selectedFormat.value.code === "online" ? 1 : 0,
 	};
-	console.log(meetData)
+	console.log(meetData);
 	await axiosClient.post("/meet", meetData).then(
 		(response) => {},
 		(error) => {
@@ -98,7 +98,7 @@ const setIsReadyStatus = async () => {
 	const meetData = {
 		is_ready: 1,
 	};
-	console.log(meetData)
+	console.log(meetData);
 	await axiosClient.post("/change-readiness", meetData).then(
 		(response) => {},
 		(error) => {
@@ -109,206 +109,270 @@ const setIsReadyStatus = async () => {
 
 const updateIsReadyStatus = () => {
 	setIsReadyStatus();
-	setTimeout(()=>{
+	setTimeout(() => {
 		window.location.reload();
-	}, 1000)
+	}, 1000);
 };
 
 const visible = ref(false);
-const visibleReviewModal = ref(true);
+const visibleReviewModal = ref(false);
 const review = ref();
+const reviewArea = ref("");
 
 const handleYesBtn = () => {
 	visible.value = false;
-	setTimeout(()=> {
+	setTimeout(() => {
 		visibleReviewModal.value = true;
-	}, 400)
-}
+	}, 400);
+};
+
+const handleNoBtn = () => {
+	visible.value = false;
+	setTimeout(() => {
+		visibleReviewModal.value = true;
+	}, 400);
+};
+
+const handleSendReview = () => {
+	visibleReviewModal.value = false;
+};
+
+const user = ref();
+
+const getCurrentUser = async () => {
+	const response = await axiosClient.get("/get-profile-info");
+	user.value = response.data;
+	console.log(user.value)
+};
+
+getCurrentUser();
 </script>
 
 <template>
-	<Dialog class="" v-model:visible="visible" :closable="false" modal :style="{ width: '500px' }">
-		<div class="font flex justify-center flex-col items-center gap-8">
-			<h1 class="font font-bold text-3xl">
-				Встреча состоялась?
-			</h1>
-			<div class="flex justify-between w-full gap-5">
-				<button @click="handleYesBtn" class="form__button w-full">Да!</button>
-				<button @click="visible = false" class="form__button w-full !bg-black !text-white">Нет...</button>
+	<Dialog
+		class=""
+		v-model:visible="visible"
+		:closable="false"
+		modal
+		:style="{ width: '500px' }">
+		<div class="font flex flex-col items-center justify-center gap-8">
+			<h1 class="font text-3xl font-bold">Встреча состоялась?</h1>
+			<div class="flex w-full justify-between gap-5">
+				<button @click="handleYesBtn" class="form__button w-full">
+					Да!
+				</button>
+				<button
+					@click="visible = false"
+					class="form__button w-full !bg-black !text-white">
+					Нет...
+				</button>
 			</div>
 		</div>
 	</Dialog>
-	<Dialog class="" v-model:visible="visibleReviewModal" :closable="false" modal :style="{ width: '500px' }">
-		<div class="font flex justify-center flex-col items-center gap-8">
-			<div class="flex justify-between w-full gap-5">
-				<h1 class="font font-bold text-3xl">
-					Оцените <br>
+	<Dialog
+		class=""
+		v-model:visible="visibleReviewModal"
+		:closable="false"
+		modal
+		:style="{ width: '500px' }">
+		<div class="font flex flex-col items-center justify-center gap-8">
+			<div class="flex w-full justify-between gap-5">
+				<h1 class="font text-3xl font-bold">
+					Оцените <br />
 					встречу
 				</h1>
-				<div class="flex gap-5">
-					<Rating :cancel="false" v-model="review">
-						<template #onicon>
-							<img src="../../assets/lighting-mini.svg" height="40" width="40"  alt=""/>
-						</template>
-						<template #officon>
-							<img src="../../assets/lighting-mini-gray.png" height="40" width="40"  alt=""/>
-						</template>
-					</Rating>
-				</div>
+				<Rating :cancel="false" v-model="review">
+					<template #onicon>
+						<img
+							src="../../assets/lighting-mini.svg"
+							height="40"
+							width="40"
+							alt="" />
+					</template>
+					<template #officon>
+						<img
+							src="../../assets/lighting-mini-gray.png"
+							height="40"
+							width="40"
+							alt="" />
+					</template>
+				</Rating>
 			</div>
+			<textarea
+				class="form__input max-h-[92px] min-h-[92px] w-full"
+				placeholder="Расскажите о себе"
+				v-model="reviewArea" />
+			<button @click="handleSendReview" class="form__button w-full">
+				Оценить
+			</button>
 		</div>
 	</Dialog>
-	<div
-		v-if="data.user.is_ready"
-		class="mb-20 flex flex-col items-center justify-center">
-		<h1 class="mb-10 font-bold">
-			У вас <span class="text-primary-dark-yellow">match</span>!
-		</h1>
-		<div class="flex flex-col items-center justify-center gap-10">
-			<div class="flex w-full justify-start gap-10">
-				<!--				блок описания-->
-				<div
-					class="flex h-[400px] w-[400px] flex-col items-center justify-center bg-gray-100">
-					<img
-						src="../../assets/mock.jpg"
-						class="h-full w-full rounded-md object-cover"
-						alt="mock" />
+	<div v-if="data">
+		<div
+			v-if="user.is_ready"
+			class="mb-20 flex flex-col items-center justify-center">
+			<h1 class="mb-10 font-bold">
+				У вас <span class="text-primary-dark-yellow">match</span>!
+			</h1>
+			<div class="flex flex-col items-center justify-center gap-10">
+				<div class="flex w-full justify-start gap-10">
+					<!--				блок описания-->
+					<div
+						class="flex h-[400px] w-[400px] flex-col items-center justify-center rounded-md bg-gray-100">
+						<img
+							src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG.png"
+							class="h-full w-full rounded-md object-cover"
+							alt="mock" />
+					</div>
+					<!--				поля с именем и т.д.-->
+					<div class="flex flex-col gap-10">
+						<h2 class="text-3xl font-semibold">
+							{{ data.colleague.name }}, {{ data.colleague.age }}
+						</h2>
+						<div class="flex gap-5">
+							<div class="flex items-center gap-2">
+								<img
+									src="../../assets/telegram.svg"
+									class="w-7"
+									alt="" />
+								<span> {{ data.colleague.telegram }} </span>
+							</div>
+							<div class="flex items-center gap-2">
+								<img
+									src="../../assets/phone.svg"
+									class="w-7"
+									alt="" />
+								<span> {{ data.colleague.phone }} </span>
+							</div>
+						</div>
+						<div class="flex flex-col gap-3">
+							<h3 class="text-xl font-semibold">
+								{{ data.colleague.position }}
+							</h3>
+							<h4>{{ data.colleague.department }}</h4>
+						</div>
+						<div class="w-full max-w-[400px]">
+							<span class="text-[#A3A3A3]">
+								{{ data.colleague.about }}
+							</span>
+						</div>
+					</div>
 				</div>
-				<!--				поля с именем и т.д.-->
-				<div class="flex flex-col gap-10">
-					<h2 class="text-3xl font-semibold">
-						{{ data.colleague.name }}, {{ data.colleague.age }}
-					</h2>
-					<div class="flex gap-5">
-						<div class="flex items-center gap-2">
-							<img
-								src="../../assets/telegram.svg"
-								class="w-7"
-								alt="" />
-							<span> {{ data.colleague.telegram }} </span>
-						</div>
-						<div class="flex items-center gap-2">
-							<img
-								src="../../assets/phone.svg"
-								class="w-7"
-								alt="" />
-							<span> {{ data.colleague.phone }} </span>
-						</div>
-					</div>
-					<div class="flex flex-col gap-3">
-						<h3 class="text-xl font-semibold">
-							{{ data.colleague.position }}
+				<!--			блок вы не согласовали встречу-->
+				<div
+					v-if="data.meet.is_confirmed"
+					class="flex w-full items-center justify-start gap-5">
+					<img src="../../assets/lighting.svg" alt="" />
+					<div>
+						<h3 class="text-xl font-bold">
+							Вы согласовали встречу!
 						</h3>
-						<h4>{{ data.colleague.department }}</h4>
-					</div>
-					<div class="w-full max-w-[400px]">
-						<span class="text-[#A3A3A3]">
-							{{ data.colleague.about }}
+						<span>
+							Формат, дата, время и место встречи успешно
+							согласованы!
 						</span>
 					</div>
 				</div>
-			</div>
-			<!--			блок вы не согласовали встречу-->
-			<div
-				v-if="data.meet.is_confirmed"
-				class="flex w-full items-center justify-start gap-5">
-				<img src="../../assets/lighting.svg" alt="" />
-				<div>
-					<h3 class="text-xl font-bold">Вы согласовали встречу!</h3>
-					<span>
-						Формат, дата, время и место встречи успешно согласованы!
-					</span>
+				<div
+					v-else
+					class="flex w-full items-center justify-start gap-5">
+					<img src="../../assets/lighting.svg" alt="" />
+					<div>
+						<h3 class="text-xl font-bold">
+							Вы не согласовали встречу!
+						</h3>
+						<span>
+							Чтобы согласовать встречу с коллегой необходимо
+							указать одинаковые условия встречи!
+						</span>
+					</div>
 				</div>
-			</div>
-			<div v-else class="flex w-full items-center justify-start gap-5">
-				<img src="../../assets/lighting.svg" alt="" />
-				<div>
-					<h3 class="text-xl font-bold">
-						Вы не согласовали встречу!
+				<div class="flex w-full flex-col justify-start gap-5">
+					<h3 class="text-3xl font-semibold">
+						{{ data.colleague.name }} предлагает
 					</h3>
-					<span>
-						Чтобы согласовать встречу с коллегой необходимо указать
-						одинаковые условия встречи!
-					</span>
+					<div class="flex justify-between gap-4">
+						<Calendar
+							showTime
+							hourFormat="24"
+							disabled
+							dateFormat="dd.mm.yy"
+							class="form__input !p-0"
+							v-model="colleagueDate"
+							placeholder="Дата и время" />
+						<input
+							class="form__input"
+							v-model="colleagueFormat"
+							disabled
+							placeholder="Формат" />
+						<input
+							class="form__input"
+							v-model="colleagueSelectedTimeframe"
+							disabled
+							placeholder="Длительность" />
+					</div>
 				</div>
-			</div>
-			<div class="flex w-full flex-col justify-start gap-5">
-				<h3 class="text-3xl font-semibold">
-					{{ data.colleague.name }} предлагает
-				</h3>
-				<div class="flex justify-between gap-4">
-					<Calendar
-						showTime
-						hourFormat="24"
-						disabled
-						dateFormat="dd/mm/yy"
-						class="form__input !p-0"
-						v-model="colleagueDate"
-						placeholder="Дата и время" />
-					<input
-						class="form__input"
-						v-model="colleagueFormat"
-						disabled
-						placeholder="Формат" />
-					<input
-						class="form__input"
-						v-model="colleagueSelectedTimeframe"
-						disabled
-						placeholder="Длительность" />
+				<div class="flex w-full flex-col justify-start gap-5">
+					<h3 class="text-3xl font-semibold">
+						Сделай
+						<span class="text-primary-dark-yellow">свой</span>
+						выбор!
+					</h3>
+					<div class="flex justify-between gap-4">
+						<Calendar
+							showTime
+							hourFormat="24"
+							dateFormat="dd.mm.yy"
+							class="form__input !p-0"
+							showIcon
+							iconDisplay="input"
+							v-model="currentUserDate"
+							placeholder="Дата и время" />
+						<Dropdown
+							class="form__input !p-0"
+							v-model="selectedFormat"
+							optionLabel="name"
+							:options="formats"
+							placeholder="Формат" />
+						<Dropdown
+							class="form__input !p-0"
+							v-model="selectedTimeframe"
+							optionLabel="name"
+							:options="timeframes"
+							placeholder="Длительность" />
+					</div>
 				</div>
+				<button
+					:disabled="
+						!(
+							currentUserDate &&
+							selectedFormat &&
+							selectedTimeframe &&
+							currentUserDate !== '' &&
+							selectedFormat !== '' &&
+							selectedTimeframe !== ''
+						)
+					"
+					@click="updateMeetInfo"
+					class="form__button disabled:!bg-gray-100 disabled:text-gray-300">
+					Подтвердить
+				</button>
 			</div>
-			<div class="flex w-full flex-col justify-start gap-5">
-				<h3 class="text-3xl font-semibold">
-					Сделай
-					<span class="text-primary-dark-yellow">свой</span> выбор!
-				</h3>
-				<div class="flex justify-between gap-4">
-					<Calendar
-						showTime
-						hourFormat="24"
-						dateFormat="dd/mm/yy"
-						class="form__input !p-0"
-						showIcon
-						iconDisplay="input"
-						v-model="currentUserDate"
-						placeholder="Дата и время" />
-					<Dropdown
-						class="form__input !p-0"
-						v-model="selectedFormat"
-						optionLabel="name"
-						:options="formats"
-						placeholder="Формат" />
-					<Dropdown
-						class="form__input !p-0"
-						v-model="selectedTimeframe"
-						optionLabel="name"
-						:options="timeframes"
-						placeholder="Длительность" />
-				</div>
-			</div>
-			<button
-				:disabled="
-					!(
-						currentUserDate &&
-						selectedFormat &&
-						selectedTimeframe &&
-						currentUserDate !== '' &&
-						selectedFormat !== '' &&
-						selectedTimeframe !== ''
-					)
-				"
-				@click="updateMeetInfo"
-				class="form__button disabled:!bg-gray-100 disabled:text-gray-300">
-				Подтвердить
+		</div>
+		<div
+			v-else
+			class="mt-20 flex flex-col items-center justify-center gap-10">
+			<h1 class="text-center font-semibold">
+				Хотите поучаствовать в <br />
+				<span class="text-primary-dark-yellow">Random Coffee</span>?
+			</h1>
+			<button @click="updateIsReadyStatus" class="form__button">
+				Конечно!
 			</button>
 		</div>
 	</div>
-	<div v-else class="mt-20 flex flex-col items-center justify-center gap-10">
-		<h1 class="text-center font-semibold">
-			Хотите поучаствовать в <br />
-			<span class="text-primary-dark-yellow">Random Coffee</span>?
-		</h1>
-		<button @click="updateIsReadyStatus" class="form__button">Конечно!</button>
+	<div class="flex w-full justify-center" v-else>
+		<h1 class="font-bold">Ожидайте распределения</h1>
 	</div>
 </template>
 
