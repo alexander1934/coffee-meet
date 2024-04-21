@@ -42,7 +42,9 @@ const getUser = async () => {
 	telegram.value = user.value.telegram;
 	phoneNumber.value = user.value.phone;
 	about.value = user.value.about;
+	image.value = user.value.avatar;
 };
+
 getUser();
 
 const onUpload = () => {
@@ -88,7 +90,7 @@ const updateProfile = () => {
 			<div class="flex gap-5">
 				<div class="flex flex-col justify-between gap-4">
 					<div
-						:style="{ 'background-image': `url(${image})` }"
+						:style="{ 'background-image': `url(${image}` }"
 						class="group flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100 hover:opacity-75">
 						<img
 							v-if="!image"
