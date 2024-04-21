@@ -99,6 +99,9 @@ const suggestMeetInfo = async () => {
 
 const updateMeetInfo = () => {
 	suggestMeetInfo();
+	setTimeout(()=>{
+		window.location.reload();
+	}, 500)
 };
 
 const setIsReadyStatus = async () => {
