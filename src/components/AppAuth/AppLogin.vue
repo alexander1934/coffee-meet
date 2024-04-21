@@ -3,25 +3,23 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import store from "../../store";
 
-// Получаем объект маршрутизатора	
+// Получаем объект маршрутизатора
 const router = useRouter();
 
 // Создаем реактивные переменные для хранения данных о пользователе
 const user = {
-  email: "",
-  password: "",
+	email: "",
+	password: "",
 };
 
 function login(ev) {
-  ev.preventDefault();
+	ev.preventDefault();
 
-  store
-    .dispatch("login", user)
-    .then(() => {
-      router.push({
-        name: "Profile",
-      });
-    })
+	store.dispatch("login", user).then(() => {
+		router.push({
+			name: "Profile",
+		});
+	});
 }
 </script>
 
@@ -40,9 +38,7 @@ function login(ev) {
 					class="form__input"
 					placeholder="Пароль"
 					type="text" />
-				<button class="form__button">
-					Продолжить
-				</button>
+				<button class="form__button">Продолжить</button>
 				<span class="text-center">
 					Еще не зарегистрированы? <br />
 					<RouterLink to="/registration" class="cursor-pointer">

@@ -4,9 +4,8 @@ import FileUpload from "primevue/fileupload";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-import axiosClient from '../../axios';
-import { useRoute } from 'vue-router';
-
+import axiosClient from "../../axios";
+import { useRoute } from "vue-router";
 
 const store = useStore();
 const router = useRouter();
@@ -23,56 +22,54 @@ function logout() {
 	});
 }
 
-const user = ref('');
+const user = ref("");
 
-const date = ref('');
-console.log(date.value);
-const position = ref('');
-const department = ref('');
-const telegram = ref('');
-const phoneNumber = ref('');
-const about = ref('');
+const date = ref("");
+const position = ref("");
+const department = ref("");
+const telegram = ref("");
+const phoneNumber = ref("");
+const about = ref("");
 
 const route = useRoute();
 
 const getUser = async () => {
-  const response = await axiosClient.get('/get-profile-info');
-  console.log(response.data);
-  user.value = response.data;
-  date.value = new Date(user.value.date_birth);
-  position.value = user.value.position;
-  department.value = user.value.departament;
-  telegram.value = user.value.telegram;
-  phoneNumber.value = user.value.phone;
-  about.value = user.value.about;
+	const response = await axiosClient.get("/get-profile-info");
+	user.value = response.data;
+	date.value = user.value.date_birth ? new Date(user.value.date_birth) : "";
+	position.value = user.value.position;
+	department.value = user.value.departament;
+	telegram.value = user.value.telegram;
+	phoneNumber.value = user.value.phone;
+	about.value = user.value.about;
 };
 getUser();
 
-const onUpload = () =>{
-	console.log("Work")
+const onUpload = () => {
+	console.log("Work");
 	window.location.reload();
-}
+};
 
 const sendUser = async () => {
 	const userData = {
-		"position": position.value,
-		"departament": department.value,
-		"about": about.value,
-		"phone": phoneNumber.value,
-		"telegram": telegram.value,
-		"date_birth": date.value
-	}
-	await axiosClient.post('/update-profile-info', userData).then(response => {
-		console.log(response);
-	}, error => {
-		console.error('Error delete book:', error.message);
-	});;
+		position: position.value,
+		departament: department.value,
+		about: about.value,
+		phone: phoneNumber.value,
+		telegram: telegram.value,
+		date_birth: date.value,
+	};
+	await axiosClient.post("/update-profile-info", userData).then(
+		(response) => {},
+		(error) => {
+			console.error("Error delete book:", error.message);
+		},
+	);
 };
 
-const updateProfile = () =>{
+const updateProfile = () => {
 	sendUser();
-}
-
+};
 </script>
 
 <template>
@@ -92,17 +89,21 @@ const updateProfile = () =>{
 				<div class="flex flex-col justify-between gap-4">
 					<div
 						:style="{ 'background-image': `url(${image})` }"
-						class="flex group hover:opacity-75 h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
-						<img v-if="!image"
+						class="group flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100 hover:opacity-75">
+						<img
+							v-if="!image"
 							src="../../assets/dragAndDrop.svg"
 							alt="dragAndDrop" />
 						<FileUpload
 							class="bg-transparent text-gray-400"
-							:class="{ 'hidden group-hover:block': image, block: !image }"
+							:class="{
+								'hidden group-hover:block': image,
+								block: !image,
+							}"
 							mode="basic"
 							@upload="onUpload"
 							name="avatar"
-							url="http://norm-perdachello.ru:8000/api/upload"
+							:url="'http://norm-perdachello.ru:8000/api/upload/' + user.id"
 							accept="image/*"
 							:maxFileSize="1000000"
 							:auto="true"
@@ -152,9 +153,7 @@ const updateProfile = () =>{
 			<img src="../../assets/emoji.svg" class="w-7" alt="emoji" />
 		</h2>
 	</div>
-	<div
-		class="flex flex-col items-center justify-center font-bold"
-		v-else>
+	<div class="flex flex-col items-center justify-center font-bold" v-else>
 		<h1>Загрузка...</h1>
 	</div>
 </template>

@@ -21,7 +21,7 @@ function register(ev) {
 	ev.preventDefault();
 	store.dispatch("register", user).then(() => {
 		router.push({
-			name: "App",
+			name: "Profile",
 		});
 	});
 }

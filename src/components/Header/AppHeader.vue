@@ -1,4 +1,8 @@
 <script setup>
+import store from "../../store/index.js";
+import { useRoute, useRouter } from "vue-router";
+import { onMounted, ref, watchEffect } from "vue";
+
 const links = [
 	{
 		name: "Актуальная встреча",
@@ -13,6 +17,17 @@ const links = [
 		link: "/profile",
 	},
 ];
+
+const route = useRoute();
+
+const router = useRouter();
+
+const isAuth = ref(true);
+
+watchEffect(() => {
+	// Проверяем путь при загрузке страницы
+	isAuth.value = !(route.path === "/login" || route.path === "/registration");
+});
 </script>
 
 <template>
@@ -21,14 +36,17 @@ const links = [
 			<div class="header__block">
 				<img class="w-28" src="../../assets/appIcon.png" alt="" />
 			</div>
-			<nav class="flex gap-20">
+			<nav v-if="isAuth" class="flex gap-20">
 				<RouterLink
 					v-for="link in links"
-					exactActiveClass="!text-primary-dark-yellow"
-					class="text-black"
+					exactActiveClass="text-primary-dark-yellow"
+					class="text-black hidden md:block"
 					:to="link.link"
 					>{{ link.name }}</RouterLink
 				>
+				<div>
+
+				</div>
 			</nav>
 		</div>
 	</header>

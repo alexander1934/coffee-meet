@@ -18,8 +18,6 @@ axiosClient.interceptors.response.use(
 	(error) => {
 		if (error.response.status === 401) {
 			sessionStorage.removeItem("TOKEN");
-		} else if (error.response.status === 404) {
-			router.push({ name: "Login" });
 		}
 		return error;
 	},

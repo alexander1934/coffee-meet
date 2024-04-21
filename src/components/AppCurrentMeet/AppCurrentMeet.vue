@@ -3,87 +3,110 @@ import Calendar from "primevue/calendar";
 import Dropdown from "primevue/dropdown";
 
 import { ref } from "vue";
+import axiosClient from "../../axios.js";
 
-const data = {
-		meet: {
-			"id": "integer",
-			"date_and_time": "string",
-			"is_online": "bool",
-			"is_done": "bool",
-			"is_confirmed": true,
-			"duration": "string"
+const data = ref(null); // Начальное значение null
+
+// Определение реактивных переменных
+const currentUserDate = ref(null);
+const colleagueDate = ref(null);
+const selectedFormat = ref(null);
+const formats = ref(null);
+const colleagueFormat = ref(null);
+const selectedTimeframe = ref(null);
+const timeframes = ref(null);
+const colleagueSelectedTimeframe = ref(null);
+
+const getUser = async () => {
+	try {
+		const response = await axiosClient.get("/meet");
+		data.value = response.data;
+
+		// Установка значений реактивных переменных после получения данных
+		currentUserDate.value = data.value.user.date_and_time
+			? new Date(data.value.user.date_and_time)
+			: "";
+		colleagueDate.value = data.value.colleague.date_and_time
+			? new Date(data.value.colleague.date_and_time)
+			: "";
+		selectedFormat.value =
+			data.value.user.is_online !== null
+				? {
+						name:
+							data.value.user.is_online !== null
+								? data.value.user.is_online
+									? "Онлайн"
+									: "Оффлайн"
+								: "",
+						code:
+							data.value.user.is_online !== null
+								? data.value.user.is_online
+									? "online"
+									: "offline"
+								: "",
+					}
+				: "";
+		formats.value = [
+			{ name: "Онлайн", code: "online" },
+			{ name: "Оффлайн", code: "offline" },
+		];
+		colleagueFormat.value =
+			data.value.colleague.is_online !== null
+				? data.value.colleague.is_online
+					? "Онлайн"
+					: "Оффлайн"
+				: "";
+		selectedTimeframe.value =
+			data.value.user.duration !== null
+				? { code: "30", name: data.value.user.duration }
+				: "";
+		timeframes.value = [
+			{ name: "10 мин", code: "10" },
+			{ name: "15 мин", code: "15" },
+			{ name: "30 мин", code: "30" },
+		];
+		colleagueSelectedTimeframe.value = data.value.colleague.duration;
+	} catch (error) {
+		console.error("Ошибка при получении данных:", error);
+	}
+};
+
+getUser();
+
+const suggestMeetInfo = async () => {
+	const meetData = {
+		duration: selectedTimeframe.value.name,
+		date_and_time: currentUserDate.value,
+		is_online: selectedFormat.value.code === "online",
+	};
+	console.log(meetData)
+	await axiosClient.post("/meet", meetData).then(
+		(response) => {},
+		(error) => {
+			console.error("Error delete book:", error.message);
 		},
-		colleague: {
-			"id": "integer",
-			"name": "Миша",
-			"age": "20",
-			"surname": "string",
-			"patronymic": "string",
-			"email": "string",
-			"position": "Старший бабл ти порридж",
-			"department": "Отдел смузихлебов",
-			"about": "Люблю хакатоны и матюкаться. А также пить, курить и употреблять наркотики",
-			"phone": "898982392342",
-			"telegram": "@smoosiehleb",
-			"is_confirmed": "bool",
-			"is_ready": "bool",
-			"duration": "30 мин",
-			"date_and_time": "2024-04-01T00:07:00.000Z",
-			"is_online": true
-		},
-		user: {
-			"id": "integer",
-			"name": "string",
-			"surname": "string",
-			"patronymic": "string",
-			"email": "string",
-			"position": "string",
-			"department": "string",
-			"about": "string",
-			"phone": "string",
-			"telegram": "string",
-			"is_confirmed": "bool",
-			"is_ready": true,
-			"duration": "30 мин",
-			"date_and_time": "2024-04-01T00:05:00.000Z",
-			"is_online": false
-		}
-}
+	);
+};
 
-//ref для даты
-const currentUserDate = ref(new Date(data.user.date_and_time));
-const colleagueDate = ref(new Date(data.colleague.date_and_time));
+const updateMeetInfo = () => {
+	suggestMeetInfo();
+};
 
-//ref для формата для текущего юзера
-const selectedFormat = ref({ name: data.user.is_online ? "Онлайн" : "Оффлайн", code: data.user.is_online ? "online" : "offline" });
-const formats = ref([
-	{ name: "Онлайн", code: "online" },
-	{ name: "Оффлайн", code: "offline" },
-]);
-
-//ref для формата коллеги
-const colleagueFormat = ref(data.colleague.is_online ? "Онлайн" : "Оффлайн");
-
-//ref для длительности текущего юзера
-const selectedTimeframe = ref({code: "30", name: data.user.duration});
-const timeframes = ref([
-	{ name: "10 мин", code: "10" },
-	{ name: "15 мин", code: "15" },
-	{ name: "30 мин", code: "30" },
-]);
-
-//ref для длительности коллеги
-const colleagueSelectedTimeframe = ref(data.colleague.duration);
-
+console.log(currentUserDate);
+console.log(
+	!currentUserDate.value && !selectedFormat.value && !selectedTimeframe.value,
+);
 </script>
 
 <template>
-	<div v-if="data.user.is_ready" class="mb-20 flex flex-col items-center justify-center">
+	<div
+		v-if="data.user.is_ready"
+		class="mb-20 flex flex-col items-center justify-center">
 		<h1 class="mb-10 font-bold">
 			У вас <span class="text-primary-dark-yellow">match</span>!
 		</h1>
 		<div class="flex flex-col items-center justify-center gap-10">
-			<div class="flex gap-10">
+			<div class="flex w-full justify-start gap-10">
 				<!--				блок описания-->
 				<div
 					class="flex h-[400px] w-[400px] flex-col items-center justify-center bg-gray-100">
@@ -94,49 +117,51 @@ const colleagueSelectedTimeframe = ref(data.colleague.duration);
 				</div>
 				<!--				поля с именем и т.д.-->
 				<div class="flex flex-col gap-10">
-					<h2 class="text-3xl font-semibold">{{data.colleague.name}}, {{data.colleague.age}}</h2>
+					<h2 class="text-3xl font-semibold">
+						{{ data.colleague.name }}, {{ data.colleague.age }}
+					</h2>
 					<div class="flex gap-5">
 						<div class="flex items-center gap-2">
 							<img
 								src="../../assets/telegram.svg"
 								class="w-7"
 								alt="" />
-							<span> {{data.colleague.telegram}} </span>
+							<span> {{ data.colleague.telegram }} </span>
 						</div>
 						<div class="flex items-center gap-2">
 							<img
 								src="../../assets/phone.svg"
 								class="w-7"
 								alt="" />
-							<span> {{data.colleague.phone}} </span>
+							<span> {{ data.colleague.phone }} </span>
 						</div>
 					</div>
 					<div class="flex flex-col gap-3">
 						<h3 class="text-xl font-semibold">
-							{{data.colleague.position}}
+							{{ data.colleague.position }}
 						</h3>
-						<h4>{{data.colleague.department}}</h4>
+						<h4>{{ data.colleague.department }}</h4>
 					</div>
 					<div class="w-full max-w-[400px]">
 						<span class="text-[#A3A3A3]">
-							{{data.colleague.about}}
+							{{ data.colleague.about }}
 						</span>
 					</div>
 				</div>
 			</div>
 			<!--			блок вы не согласовали встречу-->
-			<div v-if="data.meet.is_confirmed" class="flex justify-start w-full items-center gap-5">
+			<div
+				v-if="data.meet.is_confirmed"
+				class="flex w-full items-center justify-start gap-5">
 				<img src="../../assets/lighting.svg" alt="" />
 				<div>
-					<h3 class="text-xl font-bold">
-						Вы согласовали встречу!
-					</h3>
+					<h3 class="text-xl font-bold">Вы согласовали встречу!</h3>
 					<span>
 						Формат, дата, время и место встречи успешно согласованы!
 					</span>
 				</div>
 			</div>
-			<div v-else class="flex w-full justify-start items-center gap-5">
+			<div v-else class="flex w-full items-center justify-start gap-5">
 				<img src="../../assets/lighting.svg" alt="" />
 				<div>
 					<h3 class="text-xl font-bold">
@@ -149,7 +174,9 @@ const colleagueSelectedTimeframe = ref(data.colleague.duration);
 				</div>
 			</div>
 			<div class="flex w-full flex-col justify-start gap-5">
-				<h3 class="text-3xl font-semibold">{{data.colleague.name}} предлагает</h3>
+				<h3 class="text-3xl font-semibold">
+					{{ data.colleague.name }} предлагает
+				</h3>
 				<div class="flex justify-between gap-4">
 					<Calendar
 						showTime
@@ -200,11 +227,26 @@ const colleagueSelectedTimeframe = ref(data.colleague.duration);
 						placeholder="Длительность" />
 				</div>
 			</div>
-			<button class="form__button">Подтвердить</button>
+			<button
+				:disabled="
+					!(
+						currentUserDate &&
+						selectedFormat &&
+						selectedTimeframe &&
+						currentUserDate !== '' &&
+						selectedFormat !== '' &&
+						selectedTimeframe !== ''
+					)
+				"
+				@click="updateMeetInfo"
+				class="form__button disabled:!bg-gray-100 disabled:text-gray-300">
+				Подтвердить
+			</button>
 		</div>
 	</div>
-	<div v-else class="mt-20 flex gap-10 flex-col items-center justify-center">
-		<h1 class="font-semibold text-center">Хотите поучаствовать в <br>
+	<div v-else class="mt-20 flex flex-col items-center justify-center gap-10">
+		<h1 class="text-center font-semibold">
+			Хотите поучаствовать в <br />
 			<span class="text-primary-dark-yellow">Random Coffee</span>?
 		</h1>
 		<button class="form__button">Конечно!</button>
