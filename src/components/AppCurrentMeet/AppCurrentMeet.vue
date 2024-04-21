@@ -29,8 +29,6 @@ const getUser = async () => {
 		const response = await axiosClient.get("/meet");
 		data.value = response.data;
 		const date = new Date()
-		visible.value = data.value.meet.is_confirmed;
-		console.log(data.value.meet.is_confirmed)
 		// Установка значений реактивных переменных после получения данных
 		currentUserDate.value = data.value.user.date_and_time
 			? new Date(data.value.user.date_and_time)
