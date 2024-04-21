@@ -3,9 +3,7 @@ import Calendar from "primevue/calendar";
 import FileUpload from "primevue/fileupload";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { computed } from "vue";
-import { ref, onMounted } from "vue";
-import { updateProfileApi } from "../../api/profile";
+import { ref } from "vue";
 import axiosClient from '../../axios';
 import { useRoute } from 'vue-router';
 
@@ -13,11 +11,8 @@ import { useRoute } from 'vue-router';
 const store = useStore();
 const router = useRouter();
 
-const user = computed(() => store.state.user.data);
-
 const image = ref("");
-
-store.dispatch("getUser");
+// const image = ref("https://cdn-img1.imgworlds.com/assets/a8f48ba2-9603-4e2b-ac2d-60ce06efa566.jpg?key=home-gallery");
 
 function logout() {
 	store.dispatch("logout").then(() => {
@@ -28,25 +23,55 @@ function logout() {
 	});
 }
 
-const date = ref(new Date("2024-04-10T00:00:00.000"));
+const user = ref('');
+
+const date = ref('');
 console.log(date.value);
-const position = ref(user.position);
-const department = ref(user.department);
-const telegram = ref(user.telegram);
-const phoneNumber = ref(user.phone);
-const about = ref(user.about);
+const position = ref('');
+const department = ref('');
+const telegram = ref('');
+const phoneNumber = ref('');
+const about = ref('');
 
 const route = useRoute();
-const profile = ref('');
 
-const getBook = async () => {
+const getUser = async () => {
   const response = await axiosClient.get('/get-profile-info');
-  profile.value = response.data;
+  console.log(response.data);
+  user.value = response.data;
+  date.value = new Date(user.value.date_birth);
+  position.value = user.value.position;
+  department.value = user.value.departament;
+  telegram.value = user.value.telegram;
+  phoneNumber.value = user.value.phone;
+  about.value = user.value.about;
 };
-getBook();
+getUser();
 
-console.log(profile);
+const onUpload = () =>{
+	console.log("Work")
+	window.location.reload();
+}
 
+const sendUser = async () => {
+	const userData = {
+		"position": position.value,
+		"departament": department.value,
+		"about": about.value,
+		"phone": phoneNumber.value,
+		"telegram": telegram.value,
+		"date_birth": date.value
+	}
+	await axiosClient.post('/update-profile-info', userData).then(response => {
+		console.log(response);
+	}, error => {
+		console.error('Error delete book:', error.message);
+	});;
+};
+
+const updateProfile = () =>{
+	sendUser();
+}
 
 </script>
 
@@ -66,19 +91,20 @@ console.log(profile);
 			<div class="flex gap-5">
 				<div class="flex flex-col justify-between gap-4">
 					<div
-						:style="{ 'background-image': `url(${image.value})` }"
-						class="flex h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
-						<img
+						:style="{ 'background-image': `url(${image})` }"
+						class="flex group hover:opacity-75 h-full w-[400px] flex-col items-center justify-center gap-3 rounded-md bg-gray-100">
+						<img v-if="!image"
 							src="../../assets/dragAndDrop.svg"
 							alt="dragAndDrop" />
 						<FileUpload
 							class="bg-transparent text-gray-400"
+							:class="{ 'hidden group-hover:block': image, block: !image }"
 							mode="basic"
+							@upload="onUpload"
 							name="avatar"
 							url="http://norm-perdachello.ru:8000/api/upload"
 							accept="image/*"
 							:maxFileSize="1000000"
-							@upload="onUpload"
 							:auto="true"
 							chooseLabel="Загрузить" />
 					</div>
