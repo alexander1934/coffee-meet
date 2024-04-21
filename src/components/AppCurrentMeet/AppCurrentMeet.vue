@@ -19,11 +19,18 @@ const selectedTimeframe = ref(null);
 const timeframes = ref(null);
 const colleagueSelectedTimeframe = ref(null);
 
+const visible = ref(false);
+const visibleReviewModal = ref(false);
+const review = ref();
+const reviewArea = ref("");
+
 const getUser = async () => {
 	try {
 		const response = await axiosClient.get("/meet");
 		data.value = response.data;
 		const date = new Date()
+		visible.value = data.value.meet.is_confirmed;
+		console.log(data.value.meet.is_confirmed)
 		// Установка значений реактивных переменных после получения данных
 		currentUserDate.value = data.value.user.date_and_time
 			? new Date(data.value.user.date_and_time)
@@ -113,11 +120,6 @@ const updateIsReadyStatus = () => {
 		window.location.reload();
 	}, 1000);
 };
-
-const visible = ref(false);
-const visibleReviewModal = ref(false);
-const review = ref();
-const reviewArea = ref("");
 
 const handleYesBtn = () => {
 	visible.value = false;
@@ -342,8 +344,9 @@ getCurrentUser();
 							placeholder="Длительность" />
 					</div>
 				</div>
-				<button
-					:disabled="
+				<div class="flex gap-5">
+					<button
+						:disabled="
 						!(
 							currentUserDate &&
 							selectedFormat &&
@@ -353,10 +356,17 @@ getCurrentUser();
 							selectedTimeframe !== ''
 						)
 					"
-					@click="updateMeetInfo"
-					class="form__button disabled:!bg-gray-100 disabled:text-gray-300">
-					Подтвердить
-				</button>
+						@click="updateMeetInfo"
+						class="form__button disabled:!bg-gray-100 disabled:text-gray-300">
+						Подтвердить
+					</button>
+					<button
+						:disabled="!data.meet.is_confirmed"
+						@click="visible = true"
+						class="form__button disabled:!bg-gray-100 disabled:text-gray-300">
+						Завершить
+					</button>
+				</div>
 			</div>
 		</div>
 		<div
