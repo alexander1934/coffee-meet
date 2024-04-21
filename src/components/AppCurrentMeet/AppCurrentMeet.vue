@@ -1,6 +1,8 @@
 <script setup>
 import Calendar from "primevue/calendar";
 import Dropdown from "primevue/dropdown";
+import Dialog from 'primevue/dialog';
+import Rating from 'primevue/rating';
 
 import { ref } from "vue";
 import axiosClient from "../../axios.js";
@@ -77,7 +79,7 @@ const suggestMeetInfo = async () => {
 	const meetData = {
 		duration: selectedTimeframe.value.name,
 		date_and_time: currentUserDate.value,
-		is_online: selectedFormat.value.code === "online",
+		is_online: selectedFormat.value.code === "online" ? 1 : 0,
 	};
 	console.log(meetData)
 	await axiosClient.post("/meet", meetData).then(
@@ -92,13 +94,70 @@ const updateMeetInfo = () => {
 	suggestMeetInfo();
 };
 
-console.log(currentUserDate);
-console.log(
-	!currentUserDate.value && !selectedFormat.value && !selectedTimeframe.value,
-);
+const setIsReadyStatus = async () => {
+	const meetData = {
+		is_ready: 1,
+	};
+	console.log(meetData)
+	await axiosClient.post("/change-readiness", meetData).then(
+		(response) => {},
+		(error) => {
+			console.error("Error delete book:", error.message);
+		},
+	);
+};
+
+const updateIsReadyStatus = () => {
+	setIsReadyStatus();
+	setTimeout(()=>{
+		window.location.reload();
+	}, 1000)
+};
+
+const visible = ref(false);
+const visibleReviewModal = ref(true);
+const review = ref();
+
+const handleYesBtn = () => {
+	visible.value = false;
+	setTimeout(()=> {
+		visibleReviewModal.value = true;
+	}, 400)
+}
 </script>
 
 <template>
+	<Dialog class="" v-model:visible="visible" :closable="false" modal :style="{ width: '500px' }">
+		<div class="font flex justify-center flex-col items-center gap-8">
+			<h1 class="font font-bold text-3xl">
+				Встреча состоялась?
+			</h1>
+			<div class="flex justify-between w-full gap-5">
+				<button @click="handleYesBtn" class="form__button w-full">Да!</button>
+				<button @click="visible = false" class="form__button w-full !bg-black !text-white">Нет...</button>
+			</div>
+		</div>
+	</Dialog>
+	<Dialog class="" v-model:visible="visibleReviewModal" :closable="false" modal :style="{ width: '500px' }">
+		<div class="font flex justify-center flex-col items-center gap-8">
+			<div class="flex justify-between w-full gap-5">
+				<h1 class="font font-bold text-3xl">
+					Оцените <br>
+					встречу
+				</h1>
+				<div class="flex gap-5">
+					<Rating :cancel="false" v-model="review">
+						<template #onicon>
+							<img src="../../assets/lighting-mini.svg" height="40" width="40"  alt=""/>
+						</template>
+						<template #officon>
+							<img src="../../assets/lighting-mini-gray.png" height="40" width="40"  alt=""/>
+						</template>
+					</Rating>
+				</div>
+			</div>
+		</div>
+	</Dialog>
 	<div
 		v-if="data.user.is_ready"
 		class="mb-20 flex flex-col items-center justify-center">
@@ -249,7 +308,7 @@ console.log(
 			Хотите поучаствовать в <br />
 			<span class="text-primary-dark-yellow">Random Coffee</span>?
 		</h1>
-		<button class="form__button">Конечно!</button>
+		<button @click="updateIsReadyStatus" class="form__button">Конечно!</button>
 	</div>
 </template>
 
@@ -263,11 +322,19 @@ console.log(
 	font-family: Montserrat, sans-serif !important;
 }
 
+:deep(.p-dialog) {
+	--font-family: Montserrat, sans-serif !important;
+}
+
 :deep(.p-dropdown-filter-container) {
 	background-color: transparent;
 	border-color: var(--teal-500);
 	box-shadow: none;
 	height: 100%;
+	font-family: Montserrat, sans-serif !important;
+}
+
+.font {
 	font-family: Montserrat, sans-serif !important;
 }
 
